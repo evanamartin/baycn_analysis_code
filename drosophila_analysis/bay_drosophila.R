@@ -1,6 +1,9 @@
 # Load the drosophila data -----------------------------------------------------
 
-load('/Users/Evatar/Sync/Evan/classesUofI/BCB600/datasets/drosophila/data_drosophila_tissue.RData')
+#load('/Users/Evatar/Sync/Evan/classesUofI/BCB600/datasets/drosophila/data_drosophila_tissue.RData')
+
+setwd("~/Documents/Programs/baycn_analysis_code/drosophila_analysis")
+load('data_drosophila_tissue.RData')
 
 # Adjacency matrices -----------------------------------------------------------
 

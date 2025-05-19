@@ -6,19 +6,28 @@ library (ggplot2)
 # Load drosophila data ---------------------------------------------------------
 
 # Read in the drosophila data.
-drosophila_raw <- read.delim('/Users/Evatar/Downloads/drosophila.txt',
-                             comment.char = '#')
+#drosophila_raw <- read.delim('/Users/Evatar/Downloads/drosophila.txt',
+#                             comment.char = '#')
 
 # Remove the rows with genetic information.
-drosophila_continuous <- drosophila_raw[, -c(1:5)]
+#drosophila_continuous <- drosophila_raw[, -c(1:5)]
 
-# Load the discrete data from baycn.
+# Load the drosphila data from baycn.
 data("drosophila")
+length (drosophila)
+# 2
+summary (drosophila)
+#Length Class  Mode   
+#continuous 6510   -none- numeric
+#discrete   6510   -none- numeric
+dim (drosophila$discrete)
+# 310  21
+# the first six columns are tissues
 
 # Correlation heatmap: discrete ------------------------------------------------
 
 # Calculate the correlation of the discrete drosophila data.
-cor_dros_dis <- round(cor(drosophila), 2)
+cor_dros_dis <- round(cor(drosophila$discrete), 2)
 
 # Melt the correlation matrix.
 melted_cor_dros_dis <- melt(cor_dros_dis)
@@ -43,8 +52,9 @@ p_dros_dis <- ggplot(data = melted_cor_dros_dis,
                                    hjust = 1),
         legend.position = 'right')
 
+pdf ("Plot_heatmap_drosophila_dis_cor.pdf")
 p_dros_dis
-
+dev.off()
 # ggsave(filename = 'drosophila_hm.pdf',
 #        plot = p_dros_dis,
 #        height = 7 ,
@@ -54,7 +64,7 @@ p_dros_dis
 # Correlation heatmap: continuous ----------------------------------------------
 
 # Calculate the correlation of the discrete drosophila data.
-cor_dros_con <- round(cor(drosophila_continuous), 2)
+cor_dros_con <- round(cor(drosophila$continuous), 2)
 
 # Melt the correlation matrix.
 melted_cor_dros_con <- melt(cor_dros_con)
@@ -79,7 +89,9 @@ p_dros_con <- ggplot(data = melted_cor_dros_con,
                                    hjust = 1),
         legend.position = 'right')
 
+pdf ("Plot_heatmap_drosophila_con_cor.pdf")
 p_dros_con
+dev.off()
 
 # ggsave(filename = 'drosophila_hm_con.pdf',
 #        plot = p_dros_con,

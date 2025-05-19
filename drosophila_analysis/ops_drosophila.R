@@ -15,7 +15,7 @@ am_symmetric <- ifelse((am_discrete + t(am_discrete)) > 0, 1, 0)
 
 # Create the score parameters for order and partition MCMC.
 score_discrete <- scoreparameters('bde',
-                                  data = drosophila$discrete)
+                                  data = drosophila_discrete)
 
 set.seed(21)
 

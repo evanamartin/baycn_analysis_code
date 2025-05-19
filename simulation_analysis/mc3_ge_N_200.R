@@ -1,3 +1,7 @@
+install.packages("remotes")
+remotes::install_github("rjbgoudie/parental")
+remotes::install_github("rjbgoudie/structmcmc")
+
 library (parental,
          lib = '/mnt/lfs2/mart9986/Rpackages/')
 library (structmcmc,
