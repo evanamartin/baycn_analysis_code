@@ -3,9 +3,15 @@
 library (BiDAG)
 library (networkBMA)
 
+# Load the drosphila data from baycn ----------------------------------
+data("drosophila")
+drosophila_discrete <- drosophila$discrete
+drosophila_continuous <- drosophila$continuous
+
 # Load adjacency matrix with additional edges ----------------------------------
 
-load('/Users/Evatar/Documents/am_discrete.RData')
+# Load matrix from the same directory as this script
+load('am_discrete.RData')
 
 # Run order and partition MCMC on the drosophila data --------------------------
 
@@ -61,6 +67,7 @@ order_posterior <- edgep(order_discrete,
 #      order_posterior,
 #      order_pes,
 #      file = '/Users/Evatar/Documents/ord_drosophila.RData')
+
 
 # scanBMA helper functions -----------------------------------------------------
 
@@ -132,6 +139,21 @@ for (e in 1:dim(am_discrete)[[1]]) {
 
 scan_posterior <- am_bma(scan_discrete)
 
+
+# BCDAG
+# BCDAG requires continuous data
+# and is a stretch for the mixed drosophila data
+library (BCDAG)
+q <- ncol(drosophila_continuous)
+bcdag_discrete = learn_DAG(S = 50000, burn = 10000, a = q, U = diag(1,q)/n, data = drosophila_continuous, w = 0.05,
+                           fast = FALSE, save.memory = FALSE, collapse = TRUE)
+# extract the posterior adjacency matrix
+bcdag_discrete_adjmtx <- get_edgeprobs(bcdag_discrete)
+colnames(bcdag_discrete_adjmtx) <- colnames(drosophila_continuous)
+rownames(bcdag_discrete_adjmtx) <- colnames(drosophila_continuous)
+
+write.table(bcdag_discrete_adjmtx, "bcdag_drosophila_adj_mtx.txt", col.names = TRUE, row.names = TRUE, sep = "\t", quote = FALSE)
+
 # Save raw output and adjacency matrices ---------------------------------------
 
 save(order_discrete,
@@ -197,4 +219,20 @@ for (e in 1:length(the_row)) {
   order_pes[e, 3] <- 1 - order_pes[e, 1] - order_pes[e, 2]
   partition_pes[e, 3] <- 1 - partition_pes[e, 1] - partition_pes[e, 2]
   
+}
+
+bcdag_pes <- matrix(NA, nrow = length(the_row), ncol = 3)
+# Loop through each row/column pair and extract the 0 and 1 edge state values.
+# BCDAG
+for (e in 1:length(the_row)) {
+  
+  # Extract the value for state 0.
+  bcdag_pes[e, 1] <- bcdag_discrete_adjmtx[the_row[[e]], the_col[[e]]]
+
+  # Extract the value for state 1.
+  bcdag_pes[e, 2] <- bcdag_discrete_adjmtx[the_col[[e]], the_row[[e]]]
+
+  # Calculate the value for state 2 (only for order and partition). ScanBMA
+  # cannot provide a posterior probability for edge absence.
+  bcdag_pes[e, 3] <- 1 - bcdag_pes[e, 1] - bcdag_pes[e, 2]
 }

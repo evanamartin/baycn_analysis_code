@@ -1,7 +1,8 @@
 library (baycn,
          lib = '/mnt/lfs2/mart9986/Rpackages/')
 
-load('/mnt/lfs2/mart9986/data/data_geuvadis_pcs.RData')
+#load('/mnt/lfs2/mart9986/data/data_geuvadis_pcs.RData')
+load('data_geuvadis_pcs.RData')
 
 # Adjacency matrices -----------------------------------------------------------
 

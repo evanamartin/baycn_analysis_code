@@ -104,7 +104,7 @@ am_bma <- function (bma) {
   
 }
 
-# Run scanBMA on the drosophila data -------------------------------------------
+# Run scanBMA  -------------------------------------------
 
 # The following function will be used on all calls to the scanBMA function
 # regardless of which topology is the input.
@@ -137,6 +137,19 @@ scan_posterior <- am_bma(scan_q8_pcs)
 # out because that is the same as if they weren't run. We are doing this because
 # we don't want to consider the genetic variant as the child of other nodes.
 scan_posterior[2:9, 1] <- 0
+
+
+# Run BCDAG -----------------------------------------------------
+library (BCDAG)
+q <- ncol(data_Q8_pc)
+bcdag_q8 = learn_DAG(S = 50000, burn = 10000, a = q, U = diag(1,q)/n, data = data_Q8_pc, w = 0.05,
+                           fast = FALSE, save.memory = FALSE, collapse = TRUE)
+# extract the posterior adjacency matrix
+bcdag_q8_adjmtx <- get_edgeprobs(bcdag_q8)
+colnames(bcdag_q8_adjmtx) <- colnames(data_Q8_pc)
+rownames(bcdag_q8_adjmtx) <- colnames(data_Q8_pc)
+
+write.table(bcdag_q8_adjmtx, "bcdag_Q8_adj_mtx.txt", col.names = TRUE, row.names = TRUE, sep = "\t", quote = FALSE)
 
 # Create edge state matrix -----------------------------------------------------
 
@@ -237,3 +250,22 @@ save(order_q8_pcs,
      scan_pes,
      
      file = "/Users/Evatar/Downloads/ops_geuvadis_q8_pcs.RData")
+
+
+bcdag_pes <- matrix(NA, nrow = length(the_row), ncol = 3)
+# Loop through each row/column pair and extract the 0 and 1 edge state values.
+# BCDAG
+for (e in 1:length(the_row)) {
+  
+  # Extract the value for state 0.
+  bcdag_pes[e, 1] <- bcdag_q8_adjmtx[the_row[[e]], the_col[[e]]]
+  
+  # Extract the value for state 1.
+  bcdag_pes[e, 2] <- bcdag_q8_adjmtx[the_col[[e]], the_row[[e]]]
+  
+  # Calculate the value for state 2 (only for order and partition). ScanBMA
+  # cannot provide a posterior probability for edge absence.
+  bcdag_pes[e, 3] <- 1 - bcdag_pes[e, 1] - bcdag_pes[e, 2]
+}
+
+write.table (round (bcdag_pes, digits = 2), "bcdag_q8_pes.txt", col.names = FALSE, row.names = FALSE, sep = "\t", quote = FALSE)

@@ -1,7 +1,6 @@
-library (baycn,
-         lib = '/mnt/lfs2/mart9986/Rpackages')
+library (baycn)
 
-load('/mnt/lfs2/mart9986/data/data_geuvadis.RData')
+data ("geuvadis")
 
 # adjacency matrix for graphs with three nodes.
 am_3 <- matrix(c(0, 1, 1,
@@ -19,7 +18,7 @@ am_4 <- matrix(c(0, 1, 1, 1,
                byrow = TRUE)
 
 # get the names of the data sets
-geuvadis_names <- names(data_geuvadis)
+geuvadis_names <- names(geuvadis)
 
 # create a list to hold the output of baycn
 bay_geuvadis <- vector(mode = 'list',
@@ -32,11 +31,11 @@ set.seed(1020)
 
 for (e in 1:46) {
 
-  if (dim(data_geuvadis[[e]])[2] == 3) {
+  if (dim(geuvadis[[e]])[2] == 3) {
 
     bay_geuvadis[[e]] <- mhEdge(adjMatrix = am_3,
                                 burnIn = 0.2,
-                                data = data_geuvadis[[e]],
+                                data = geuvadis[[e]],
                                 iterations = 30000,
                                 nGV = 1,
                                 pmr = TRUE,
@@ -50,7 +49,7 @@ for (e in 1:46) {
 
     bay_geuvadis[[e]] <- mhEdge(adjMatrix = am_4,
                                 burnIn = 0.2,
-                                data = data_geuvadis[[e]],
+                                data = geuvadis[[e]],
                                 iterations = 30000,
                                 nGV = 1,
                                 pmr = TRUE,

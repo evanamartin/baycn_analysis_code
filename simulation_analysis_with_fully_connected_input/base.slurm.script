@@ -1,0 +1,10 @@
+#!/bin/bash
+#SBATCH -q primary
+#SBATCH -N 1-1
+#SBATCH -n 12
+#SBATCH --mem=128G
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=hp8415@wayne.edu
+#SBATCH -o out/nc11.output_%j.out
+#SBATCH -e out/nc11.errors_%j.err
+#SBATCH -t 9-0:0:0
